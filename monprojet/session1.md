@@ -67,13 +67,11 @@ Cette session a pour but de vous familiariser avec les bases des containers Dock
     ```
     ![permission1](images/session1/permission1.png)
     ![permission2](images/session1/permission2.png)
-    ```markdown
 
     *Illustration des permissions et capacités d’un container exécuté avec l’option `--cap-add=SYS_ADMIN`.*  
     *La première image montre les permissions par défaut, tandis que la seconde illustre les permissions étendues obtenues grâce à cette option.*  
     *Le fichier `/proc/self/status` contient des informations détaillées sur le processus en cours d'exécution.*  
     *L’option `--cap-add=SYS_ADMIN` accorde au container des privilèges supplémentaires, permettant d'effectuer des actions normalement restreintes.*
-    ```
 
 ---
 
@@ -84,7 +82,8 @@ Cette session a pour but de vous familiariser avec les bases des containers Dock
     ```
     - Observez pourquoi cette pratique peut être dangereuse. Un container en mode privilégié a un accès étendu au système hôte, ce qui peut compromettre la sécurité.
 
-    ![privilege-mode](images/session1/privilege-mode.png)  
+    ![privilege-mode](images/session1/privilege-mode.png)
+
     *Illustration de l'exécution d'un container en mode privilégié. Ce mode accorde au container des permissions étendues, ce qui peut permettre des interactions directes avec le matériel ou des modifications critiques sur l'hôte. Cette configuration doit être évitée sauf en cas de nécessité absolue.*
 
 2. **Simuler une évasion de container**  
@@ -93,7 +92,8 @@ Cette session a pour but de vous familiariser avec les bases des containers Dock
     ```
     - Analysez les implications de cette faille de configuration. Monter le système de fichiers de l’hôte dans un container peut permettre à un attaquant d’accéder ou de modifier des fichiers critiques.
 
-    ![evasion](images/session1/evasion.png.png)
+    ![evasion](images/session1/evasion.png)
+
     *Illustration de l'accès au système de fichiers de l'hôte depuis un container. Cette pratique doit être évitée pour garantir la sécurité de l'environnement hôte.*
 
 ---
@@ -114,7 +114,6 @@ Cette session a pour but de vous familiariser avec les bases des containers Dock
     CMD ["echo", "Container sécurisé!"]
     ```
 2. **Construire et exécuter l’image**  
-    ```markdown
     ```bash
     docker build -t secure-container .
     docker run --rm secure-container
@@ -122,16 +121,14 @@ Cette session a pour but de vous familiariser avec les bases des containers Dock
 
     ![build-secureimage](images/session1/build-secureimage.png)
     *Illustration de la construction et de l'exécution d'une image sécurisée. Cette image utilise un utilisateur non-root pour renforcer la sécurité et limiter les privilèges dans le container.*
-    ```
 
 3. **Afficher l'id et l'uid de l'utilisateur**  
-    ```markdown
         ```bash
         docker run --rm secure-container id
         ```
         ![id-user](images/session1/id-user.png)  
         *Illustration de l'exécution de la commande `id` dans un container sécurisé. Cette commande affiche l'identifiant utilisateur (UID) et les groupes associés, confirmant que le container s'exécute avec un utilisateur non-root, renforçant ainsi la sécurité.*
-    ```
+
 
 ---
 
