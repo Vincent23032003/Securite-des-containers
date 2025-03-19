@@ -156,6 +156,9 @@ Cette session a pour but de vous familiariser avec les bases des containers Dock
     docker pull vulnerables/web-dvwa
     trivy image vulnerables/web-dvwa
     ```
+
+    ![pull image](images/session1/pull-image.png)
+    
 2. **Sauvegarder le résultat en JSON**  
     ```bash
     trivy image --format json --output scan-result.json vulnerables/web-dvwa
