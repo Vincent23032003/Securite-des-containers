@@ -18,7 +18,7 @@ Cette session a pour but de vous familiariser avec les bases des containers Dock
     - Observez les logs affichés.
     - Comprenez les étapes du lancement du container.
 
-    ![hello-word](hello-word.png)
+    ![hello-word](images/session1/hello-word.png)
 
 ---
 
@@ -32,6 +32,10 @@ Cette session a pour but de vous familiariser avec les bases des containers Dock
     - `pwd`
     - `whoami`
 
+    ![alpine-start](images/session1/alpine-start.png)
+
+    ![Ping goolge](images/session1/ping-google.png)
+
 ---
 
 ### 3. Analyser les Ressources Système d’un Container
@@ -41,6 +45,8 @@ Cette session a pour but de vous familiariser avec les bases des containers Dock
     docker stats test-container
     ```
 2. **Observer la consommation de CPU et mémoire**.
+
+![CPU-stats](images/session1/CPU-stats.png)
 
 ---
 
