@@ -18,6 +18,8 @@ Cette session a pour but de vous familiariser avec les bases des containers Dock
     - Observez les logs affichés.
     - Comprenez les étapes du lancement du container.
 
+    ![hello-word](hello-word.png)
+
 ---
 
 ### 2. Explorer un Container en Interactif
