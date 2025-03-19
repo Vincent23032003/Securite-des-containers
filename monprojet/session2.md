@@ -51,11 +51,60 @@ On vérifie si le port est exposé avec netstat
 -Le port 8080 est bien en écoute (LISTENING) sur toutes les interfaces (0.0.0.0)
 
 -Cela signifie que ton conteneur accepte des connexions depuis n’importe quelle adresse IP sur ta machine.
--Si tu ouvres un navigateur et accèdes à http://localhost:8080, tu devrais voir la page par défaut de Nginx.
+-Si on ouvre un navigateur et que l'on tape  http://localhost:8080, on devrait voir la page par défaut de Nginx.
 
 3. **Vérifier si le conteneur répond bien (Bonus)**
 
 ![localhost8080](images/session2/localhost8080.png)
 
-Cela marche bien.
+Cela marche bien. On voit la page Nginx par défault.
+
+### 2. Restreindre les permissions d’accès aux fichiers sensibles
+
+1. **Monter un volume avec des permissions spécifiques** 
+
+```bash
+docker run -it --rm -v /etc/passwd:/mnt/passwd:ro alpine sh
+```
+-v /etc/passwd:/mnt/passwd:ro : Monte le fichier /etc/passwd en mode lecture seule (ro).
+-Permet de tester si le fichier est accessible et modifiable.
+
+Pouvez vous lire le fichier /mnt/passwd ?
+
+![readFile](images/session2/readFile.png)
+On peut apercevoir que le fichier est lisible.
+
+Pouvez-vous écrire le fichier /mnt/passwd ?
+
+![writeFile](images/session2/writeFile.png)
+On peut apercevoir que nous n'avons pas les droits pour écrire. Nous sommes juste en mode Read-only.
+
+### 3. Auditer la configuration d’un container avec Docker Bench
+
+1. **Installer et exécuter Docker Bench for Security** 
+
+```bash
+git clone https://github.com/docker/docker-bench-security.git
+cd docker-bench-security/
+```
+
+Auditer votre host, quelle est votre score ?
+
+
+Comme je suis sur Windows, j'ai du taper la commande suivante pour auditer.
+
+```bash
+docker run -it --rm --cap-add audit_control -v //var/run/docker.sock:/var/run/docker.sock docker/docker-bench-security
+```
+![hostAudit](images/session2/hostAudit.png)
+On obtient un score de 9.
+
+Auditer le container vulnerables/web-dvwa, que remarquez-vous ?
+
+On démarre le conteneur web-dvwa avec la commande suivante :
+
+```bash
+docker run -d --name dvwa vulnerables/web-dvwa
+```
+
 
