@@ -67,13 +67,15 @@ Cette session a pour but de vous familiariser avec les bases des containers Dock
     ```
     ![permission1](permission1.png)
     ```markdown
+
     *Illustration des permissions et capacités d’un container exécuté avec l’option `--cap-add=SYS_ADMIN`.*  
     *La première image montre les permissions par défaut, tandis que la seconde illustre les permissions étendues obtenues grâce à cette option.*  
-    Le fichier `/proc/self/status` contient des informations détaillées sur le processus en cours d'exécution.  
-    L’option `--cap-add=SYS_ADMIN` accorde au container des privilèges supplémentaires, permettant d'effectuer des actions normalement restreintes.
+    *Le fichier `/proc/self/status` contient des informations détaillées sur le processus en cours d'exécution.*  
+    *L’option `--cap-add=SYS_ADMIN` accorde au container des privilèges supplémentaires, permettant d'effectuer des actions normalement restreintes.*
     ```
 
 ---
+
 
 ## Notes
 - Assurez-vous d'avoir les droits administratifs pour exécuter certaines commandes.
