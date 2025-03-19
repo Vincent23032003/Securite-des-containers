@@ -65,7 +65,8 @@ Cette session a pour but de vous familiariser avec les bases des containers Dock
     ```bash
     docker run --rm --cap-add=SYS_ADMIN alpine sh -c 'cat /proc/self/status'
     ```
-    ![permission1](permission1.png)
+    ![permission1](images/session1/permission1.png)
+    ![permission2](images/session1/permission2.png)
     ```markdown
 
     *Illustration des permissions et capacités d’un container exécuté avec l’option `--cap-add=SYS_ADMIN`.*  
