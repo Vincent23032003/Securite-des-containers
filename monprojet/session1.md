@@ -19,7 +19,7 @@ Cette session a pour but de vous familiariser avec les bases des containers Dock
     - Comprenez les étapes du lancement du container.  
       Lorsque vous exécutez la commande `docker run --rm hello-world`, Docker télécharge l'image `hello-world` si elle n'est pas déjà présente localement, puis crée et exécute un container basé sur cette image. Une fois le container terminé, il est automatiquement supprimé grâce à l'option `--rm`.
 
-    ![hello-world](images/session1/hello-world.png)  
+    ![hello-world](images/session1/hello-word.png)  
     *Illustration de l'exécution réussie du container `hello-world` et des logs affichés.*
 
 ---
