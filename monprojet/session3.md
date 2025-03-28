@@ -12,11 +12,16 @@ Kind et Kubernetes sont bien installés avec la version 0.27.0 et 1.30.5 respect
 
 ![image](https://github.com/user-attachments/assets/220e17fe-44b1-4b29-a807-08836223aecf)
 
-On crée le cluster kind et on vérifie si cela a bien fonctionné.
+On crée le cluster kind et on vérifie si cela a bien fonctionné (`monprojet/session3/kind-config.yaml`).
 
 On observe que les 2 master nodes et les 2 worker nodes sont bien crées. 
 
 ![image](https://github.com/user-attachments/assets/4c7442a2-eb28-4c4d-86ec-1f86d84ebe3c)
+
+On affiche les namespaces grâce à cette commande : 
+```bash
+kubectl get namespaces
+```
 
 On a 5 namespaces de créer qui sont installés par défaut.
 
@@ -30,7 +35,7 @@ Il est également possible de gérer les accès pour un certain namespace grâce
 
 ![image](https://github.com/user-attachments/assets/68883ed5-f253-4e72-894a-f31bcaf6f66b)
 
-Le namespace 'test-rbac' est bien crée.
+Le namespace 'test-rbac' est bien créé.
 
 On va donc travailler dans ce namespace pour appliquer les RBACs.
 
@@ -39,7 +44,8 @@ On va donc travailler dans ce namespace pour appliquer les RBACs.
 ![image](https://github.com/user-attachments/assets/ab2e9793-df4e-4a39-a890-dff08365e513)
 
 
-On a crée le pod test-rbac. 
+On a créé le pod test-rbac (`monprojet/session3/mon-pod.yaml`). 
+
 
 ![image](https://github.com/user-attachments/assets/2d63229a-10f7-404e-b423-ca7861679442)
 
@@ -56,18 +62,18 @@ Le pod est donc déployé avec succès.
 
 ![image](https://github.com/user-attachments/assets/f37bf00c-7b90-460f-81f9-580d4444ee8e)
 
-On déploie le rôle qu'on va appliquer à un utilisateur. On définit les rôles "read" et "list". L'utilisateur est donc autorisé à lire et à lister la ressource. 
+On déploie le rôle (`monprojet/session3/role-pod-reader.yaml`) qu'on va appliquer à un utilisateur. On définit les rôles "read" et "list". L'utilisateur est donc autorisé à lire et à lister la ressource. 
 
 Pour afficher ce rôle on utilise la commande :
 ```bash
 kubectl get roles -n test-rbac
 ```
 
-Dans une situation réelle il est important de définir le minimum de rôles qu'a besoin un utilisateur pour éviter qu'il puisse accéder à des ressources sensibles.
+Dans une situation réelle il est important de définir le minimum de rôle qu'a besoin un utilisateur pour éviter qu'il puisse accéder à des ressources sensibles.
 
 ![image](https://github.com/user-attachments/assets/40a8a8d3-b6ef-48fc-9b50-3c73a28e6f21)
 
-On applique le fichier role binding pour lier le role crée précedemment à l'utilisateur qeu l'on va créer.
+On applique le fichier role binding (`monprojet/session3/rolebinding-pod-reader.yaml`) pour lier le role créé précedemment à l'utilisateur que l'on va configurer.
 
 ![image](https://github.com/user-attachments/assets/3facc9dd-a587-46a8-8121-11119ffd0f8c)
 
@@ -85,13 +91,13 @@ Par la suite on génère le certificat d'autorité pour titi qui va l'authentifi
 
 Les certificats ont plusieurs avantages en termes de sécurité : 
 - Les certificats permettent d'établir des communications chiffrées entre les différents composants du cluster
-- En utilisant des certificats, vous pouvez appliquer des politiques RBAC strictes. Cela permet de définir des différentes permissions, limitant ainsi les actions que chaque utilisateur peut effectuer.
+- En utilisant des certificats, il est possible d'appliquer des politiques RBAC strictes. Cela permet de définir différentes permissions, limitant ainsi les actions que chaque utilisateur peut effectuer.
 - Les certificats permettent de tracer les actions effectuées par chaque utilisateur, facilitant ainsi l'audit et la détection des activités suspectes.
-- En limitant l'accès au cluster aux seules entités possédant les certificats appropriés, vous réduisez le risque d'accès non autorisé et de compromission du cluster.
+- En limitant l'accès au cluster aux seules entités possédant les certificats appropriés, on réduit le risque d'accès non autorisé et de compromission du cluster.
 
-Il est donc essentiel d'utiliser des certificats pour l'authentification des utilisateurs.
+Il est donc essentiel d'utiliser des certificats pour sécuriser l'authentification des utilisateurs.
 
-Cependant, en temps normal les certificats doivent être signés par des autorités de certification comme DigiCert pour assurer l'identité des identités présentes sur le web. 
+Cependant, en temps normal les certificats doivent être signés par des autorités de certification reconnues comme DigiCert pour assurer l'identité des entités présentes sur le web. 
 
 Dans notre cas, nous avons un certificat auto-signé ce qui n'a aucune valeur sur le web.
 
@@ -109,7 +115,7 @@ Titi est donc bien ajouté dans le kube context avec les bons fichiers de clé e
 
 ![image](https://github.com/user-attachments/assets/b2c19fe9-fb98-47f1-9b59-3b234b883b00)
 
-On crée le contexte pour le nouvel utilisateur dans notre namespace afin de pouvoir se connecter.
+On crée le contexte pour le nouvel utilisateur dans notre namespace afin de pouvoir se connecter en tant que titi.
 
 ![image](https://github.com/user-attachments/assets/7decf4e8-d33f-441c-9aef-a3566ea772eb)
 
@@ -117,7 +123,7 @@ On change de contexte pour être connecté en tant que titi et on liste les pods
 
 ![image](https://github.com/user-attachments/assets/696f4b5e-bd1f-4edf-97e0-32b167dd9c2b)
 
-Il est interdit de créer un pod pour titi car nous avions spécifié uniquement les actions "get" et "list" dans le fichier role-pod-reader qui définit les actions que peut faire titi. 
+Il est interdit de créer un pod pour titi car nous avions spécifié uniquement les actions "get" et "list" dans le fichier role-pod-reader (`monprojet/session3/test-role.yaml`) qui définit les actions que peut faire titi. 
 
 Si nous voulons que titi puisse créer un pod il faut rajouter l'action "create".
 
@@ -160,17 +166,21 @@ On démarre l'ui de falco et on y accède sur notre navigateur.
 
 ![image](https://github.com/user-attachments/assets/9cc00645-28ef-404d-888d-07f308b68efc)
 
-On crée de l'activité dans le cluster avec le pod 2.
+On crée de l'activité dans le cluster avec le pod 2 (`monprojet/session3/mon-pod-2.yml`).
 
 ![Enregistrement de lécran 2025-03-28 190812 (1)](https://github.com/user-attachments/assets/53ab725b-2a96-4662-b09c-82b1ae672535)
 
-Comme on peut le voir dans la vidéo, on accède un shell dans le pod en étant root directement, ce qui nous donne tous les droits possibles. Les attaquants peuvent donc exploiter cette faille de sécurité pour compromettre le pod.
+Comme on peut le voir dans la vidéo, on accède à un shell dans le pod en étant root directement, ce qui nous donne tous les droits possibles. Les attaquants peuvent donc exploiter cette faille de sécurité pour compromettre le pod.
 
 Cela nous crée une alerte dans falco également qui nous alerte sur la situation.
 
 ![Enregistrement de lécran 2025-03-28 193337](https://github.com/user-attachments/assets/7afea17a-4ad7-47e9-bd2d-e158cafbc541)
 
 On génère une requête sur l'API Kubernetes pour créer du traffic ce qui est reporté dans falco. Sa priorité est notice, falco considère que c'est une action bénigne et la règle est la suivante : Contacter le serveur API K8S à partir d'un conteneur.
+
+---
+
+### 5. Bonus
 
 ![image](https://github.com/user-attachments/assets/dd1f388f-3d62-4d53-8b45-eabcb843294a)
 
@@ -182,4 +192,4 @@ D'abord, on supprime puis on recrée le pod pour que les modifications s'appliqu
 
 ![image](https://github.com/user-attachments/assets/0b9211e1-18af-4921-a40e-62a9a55bd842)
 
-Et enfin, on se connecte au shell du pod et on vérifie que nous ne sommes root, ce qui est bien le cas. Les actions de l'utilisateur sont donc restreintes ce qui renforce la sécurité du pod.
+Et enfin, on se connecte au shell du pod et on vérifie que nous ne sommes pas root, ce qui est bien le cas. Les actions de l'utilisateur sont donc restreintes ce qui renforce la sécurité du pod.
