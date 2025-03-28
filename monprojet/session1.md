@@ -163,8 +163,22 @@ Cette session a pour but de vous familiariser avec les bases des containers Dock
     ```bash
     trivy image --format json --output scan-result.json vulnerables/web-dvwa
     ```
+
+    ![trivy](images/session1/trivy1.png)
+
 3. **Résumé des vulnérabilités**  
     - Faites un rapide résumé des vulnérabilités détectées dans l’image.
+
+    Critiques:
+    Il y a plusieurs failles critiques qui peuvent permettre à un attaquant de prendre le contrôle du système, exécuter du code à distance ou accéder à des données sensibles.
+    
+    Elevées:
+    Certaines bibliothèques utilisées ont des failles connues qui pourraient être exploitées.
+    Il y a aussi des problèmes liés à des mauvaises configurations ou à des versions obsolètes de logiciels qui laissent des portes ouvertes aux attaques.
+
+    Moyens
+    Exposé a des risques comme du Cross-Site Scripting (XSS) ou des fuites d’infos qui ne sont pas immédiatement exploitables.
+    Des dépendances avec des vulnérabilités connues, mais qui nécessitent des conditions spécifiques pour être exploitées.
 
 ---
 
