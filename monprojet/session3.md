@@ -24,6 +24,8 @@ Ces namespaces vont nous permettre d'isoler des ressources au sein de notre clus
 
 Il est également possible de gérer les accès pour un certain namespace grâce aux politiques de contrôle d'accès basées sur les rôles (RBAC), ce que nous allons faire juste après.
 
+---
+
 ### 2. Expérimentation des RBAC
 
 ![image](https://github.com/user-attachments/assets/68883ed5-f253-4e72-894a-f31bcaf6f66b)
@@ -56,7 +58,7 @@ Le pod est donc déployé avec succès.
 
 On déploie le rôle qu'on va appliquer à un utilisateur. On définit les rôles "read" et "list". L'utilisateur est donc autorisé à lire et à lister la ressource. 
 
-Pour afficher ce rôle on utilisa la commande :
+Pour afficher ce rôle on utilise la commande :
 ```bash
 kubectl get roles -n test-rbac
 ```
@@ -123,6 +125,8 @@ Si nous voulons que titi puisse créer un pod il faut rajouter l'action "create"
 
 On change de contexte.
 
+---
+
 ### 3. Détection et alerte d'intrusions dans kubernetes avec l'outil Falco
 
 Falco est un outil de sécurité open-source conçu pour détecter les comportements anormaux et les menaces en temps réel dans les environnements Kubernetes.
@@ -150,6 +154,8 @@ On installe falco et on vérifie que les pods sont bien créés.
 
 On démarre l'ui de falco et on y accède sur notre navigateur. 
 
+---
+
 ### 4. Falco en pratique
 
 ![image](https://github.com/user-attachments/assets/9cc00645-28ef-404d-888d-07f308b68efc)
@@ -165,3 +171,15 @@ Cela nous crée une alerte dans falco également qui nous alerte sur la situatio
 ![Enregistrement de lécran 2025-03-28 193337](https://github.com/user-attachments/assets/7afea17a-4ad7-47e9-bd2d-e158cafbc541)
 
 On génère une requête sur l'API Kubernetes pour créer du traffic ce qui est reporté dans falco. Sa priorité est notice, falco considère que c'est une action bénigne et la règle est la suivante : Contacter le serveur API K8S à partir d'un conteneur.
+
+![image](https://github.com/user-attachments/assets/dd1f388f-3d62-4d53-8b45-eabcb843294a)
+
+![image](https://github.com/user-attachments/assets/7bcab541-f2a9-45f0-81e4-12f7fc96f6e9)
+
+Pour des raisons de sécurité, on modifie le pod 2 afin que l'utilisateur n'est pas les privilèges root lorsqu'il est sur le shell du pod.
+
+D'abord, on supprime puis on recrée le pod pour que les modifications s'appliquent.
+
+![image](https://github.com/user-attachments/assets/0b9211e1-18af-4921-a40e-62a9a55bd842)
+
+Et enfin, on se connecte au shell du pod et on vérifie que nous ne sommes root, ce qui est bien le cas. Les actions de l'utilisateur sont donc restreintes ce qui renforce la sécurité du pod.
