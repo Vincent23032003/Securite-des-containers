@@ -142,11 +142,161 @@ docker run -d --name dvwa vulnerables/web-dvwa
 
 Auditer le container vulnerables/web-dvwa, que remarquez-vous ?
 
-Puis on audit le container DVWA :
+
+On lance l'audit via la commande suivante :
 
 ```bash
-sudo ./docker-bench-security.sh
+sudo ./docker-bench-security.sh > audit_dvwa.txt
 ```
 
-![score2](images/session2/score2.png)
 
+L’audit Docker Bench révèle plusieurs faiblesses importantes liées au container dvwa, ce qui confirme qu’il est conçu pour être vulnérable. Voici les principales observations accompagnées de captures d’écran.
+Puis on audit le container DVWA :
+
+![question3](images/session2/question3.png)
+
+Sur cette capture du fichier dvwa.txt, on peut comprendre que container dvwa utilise l’utilisateur root, ce qui représente un risque important : en cas de compromission, un attaquant aurait un accès complet.
+
+![question3.1](images/session2/question3.1.png)
+
+Sur cette capture du fichier dvwa.txt, on peut comprendre qu'aucune sécurité type SELinux, AppArmor ou seccomp n’est configurée, laissant le container sans isolation avancée.
+
+
+
+![question3.2](images/session2/question3.2.png)
+
+Sur cette capture du fichier dvwa.txt, on peut comprendre que le système de fichiers du container est monté en lecture/écriture, ce qui permettrait à un attaquant de modifier potentiellement le contenu du container.
+
+![question3.3](images/session2/question3.3.png)
+
+Sur cette capture du fichier dvwa.txt, on peut comprendre que l’absence de HEALTHCHECK rend difficile la détection automatique d’un service en panne.
+
+![question3.4](images/session2/question3.4.png)
+
+Enfin, sur cette capture du fichier dvwa.txt, on peut comprendre qu'aucune restriction sur l’élévation de privilèges (no-new-privileges=false), donc un binaire setuid peut par exemple élever ses droits à l'intérieur du container.
+
+
+
+### 4. Stocker et Utiliser des Secrets
+
+1. **Lancer un container Vault** 
+
+On lance le container Vault via la commande suivante :
+
+```bash
+docker run --cap-add=IPC_LOCK \
+  -e 'VAULT_LOCAL_CONFIG={"storage": {"file": {"path": "/vault/file"}}, "listener": [{"tcp": { "address": "0.0.0.0:8200", "tls_disable": true}}], "default_lease_ttl": "168h", "max_lease_ttl": "720h", "ui": true}' \
+  -p 8200:8200 vault:1.13.3 server
+```
+
+
+1. **Accéder à l’interface UI** 
+
+
+On tape http://localhost:8200 sur un interpréteur web, puis on arrive sur cette page Vault :
+
+![keys](images/session2/keys.png)
+
+On obtient une clé de déchiffrement (Unseal Key) et un Root Token (c’est celui ci que l'on va utiliser pour nous connecter).
+On sauvegarde ces clés dans un fichier vault-init.txt temporaire.
+
+
+
+Une fois arrivé sur cette page, on doit entrer la key1 que l'on a enregistré au préalable dans notre fichier vault-init.txt.
+
+![UnsealVault](images/session2/UnsealVault.png)
+
+Puis on arrive sur cette page où l'on entre le token également enregistré au préalable dans notre fichier vault-init.txt.
+
+![token](images/session2/token.png)
+
+
+On arrive bien à notre "page d'admnistration" Vault.
+
+![accueuilVault](images/session2/accueuilVault.png)
+
+
+2. **Ajout d'un moteur kv** 
+
+On ajoute un moteur kv :
+
+![kv](images/session2/kv.png)
+
+Dans le champs path, on met "containers"
+
+![path](images/session2/path.png)
+
+3. **Ajout d'un moteur secret** 
+
+Puis on ajoute un secret 
+
+![secret](images/session2/secret.png)
+
+On entre des valeurs pour le secret 
+
+![secret2](images/session2/secret2.png)
+
+
+4. **Ajout d'une policies** 
+
+On ajoute une policies 
+
+![policies](images/session2/policies.png)
+
+
+On accorde le droit de lecture 
+
+![policies2](images/session2/policies2.png)
+
+
+5. **Création/association de password à la policy** 
+
+
+![password](images/session2/password.png)
+
+On créé le user 1 :
+![user1](images/session2/user1.png)
+
+On ajoute la policy à l'user :
+
+![ajoutPolicies](images/session2/ajoutPolicies.png)
+
+
+5. **Lancer un container alpine et avec l'outil curl faire une authentification au Vault, puis récuperer le secret** 
+
+
+On lance le container alpine avec la commande suivante :
+
+```bash
+docker run -it alpine sh
+```
+
+On installe curl ç l'intérieur du container Alpine
+
+```bash
+apk add curl
+```
+
+![alpine](images/session2/alpine.png)
+
+
+
+On a authentifier l'user1 via Vault :
+
+![tokenUser](images/session2/tokenUser.png)
+
+Voici le client_token :
+
+hvs.CAESIAEmmFBmGErCjDx2M2ZAhv-SNKgUM2PUgJcnafW9BgIWGh4KHGh2cy5HQWo4Q1k0VXJETk5vM05KcFJhcGtmdDk
+
+
+Maintenant, on va lire le secret via la commande :
+
+```bash
+curl --header "X-Vault-Token: hvs.CAESIAEmmFBmGErCjDx2M2ZAhv-SNKgUM2PUgJcnafW9BgIWGh4KHGh2cy5HQWo4Q1k0VXJETk5vM05KcFJhcGtmdDk" \
+  http://10.0.2.15:8200/v1/containers/data/mon-secret
+```
+
+On a bien récupéré le secret "mon-secret" stocké dans Vault depuis un container Alpine via l'API REST
+
+![secretUser](images/session2/secretUser.png)
