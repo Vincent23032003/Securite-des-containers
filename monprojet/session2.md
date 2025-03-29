@@ -42,11 +42,27 @@ http://localhost:8080
 2. **Vérifier si le port est bien exposé**
 
 ```bash
-netstat -ano | findstr :8080
+ss -tuln
+```
+On vérifie si le port est exposé avec ss
+
+![ss](images/session2/ss.png)
+
+```bash
+netstat -tuln
 ```
 On vérifie si le port est exposé avec netstat
 
-![checkPort](images/session2/checkPort.png)
+![netstat](images/session2/netstat.png)
+
+On tape la commande suivante pour relancer le container avec une IP d’écoute restreinte :
+
+```bash
+docker run -d -p 127.0.0.1:8080:80 nginx
+```
+![restreindre](images/session2/restreindre.png)
+
+Le terminal  retourne l’ID du container, ce qui signifie que :
 
 -Le port 8080 est bien en écoute (LISTENING) sur toutes les interfaces (0.0.0.0)
 
@@ -97,14 +113,40 @@ Comme je suis sur Windows, j'ai du taper la commande suivante pour auditer.
 docker run -it --rm --cap-add audit_control -v //var/run/docker.sock:/var/run/docker.sock docker/docker-bench-security
 ```
 ![hostAudit](images/session2/hostAudit.png)
+
 On obtient un score de 9.
 
-Auditer le container vulnerables/web-dvwa, que remarquez-vous ?
 
-On démarre le conteneur web-dvwa avec la commande suivante :
+J'ai refait la même procédure sur ubuntu.
+
+```bash
+sudo ./docker-bench-security.sh
+```
+![score](images/session2/score.png)
+
+On obtient un score de 0,  ce qui ne correspond pas à une note, juste une valeur par défaut.
+
+Néanmoins, tous les tests sont [PASS], mais ils indiquent :
+
+(Swarm mode not enabled)
+
+Cela signifie que notre hôte n'utilise pas Docker Swarm, donc ces tests ne sont pas réellement exécutés, mais considérés comme non concernés
+
+
+On démarre le container vulnérable (DVWA) :
 
 ```bash
 docker run -d --name dvwa vulnerables/web-dvwa
 ```
 
-A
+
+Auditer le container vulnerables/web-dvwa, que remarquez-vous ?
+
+Puis on audit le container DVWA :
+
+```bash
+sudo ./docker-bench-security.sh
+```
+
+![score2](images/session2/score2.png)
+
