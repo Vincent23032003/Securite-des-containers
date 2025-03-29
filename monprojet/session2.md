@@ -300,3 +300,80 @@ curl --header "X-Vault-Token: hvs.CAESIAEmmFBmGErCjDx2M2ZAhv-SNKgUM2PUgJcnafW9Bg
 On a bien récupéré le secret "mon-secret" stocké dans Vault depuis un container Alpine via l'API REST
 
 ![secretUser](images/session2/secretUser.png)
+
+
+### 5. Trouver une clé API dans une image Docker
+
+docker pull ety92/demo:v1
+
+Pour cela on utilise la commande CLI :
+
+```bash
+docker pull ety92/demo:v1
+```
+
+5. **Lancer un container alpine et avec l'outil curl faire une authentification au Vault, puis récuperer le secret**
+
+1. **Créer un container à partir de l’image**
+
+```bash
+docker run -it --rm ety92/demo:v1 sh
+```
+
+2. **Exporter le système de fichiers du container dans une archive**
+
+```bash
+docker export demo_temp > demo.tar
+```
+
+3. **Créer un dossier pour extraire le contenu**
+
+```bash
+docker export demo_temp > demo.tar
+```
+
+4. **Extraire l’archive dans ce dossier**
+
+```bash
+tar -xf demo.tar -C demo_contents
+```
+
+5. **Rechercher une clé ou un secret dans tous les fichiers**
+
+```bash
+grep -ri "api_key\|key\|secret" demo_contents
+```
+
+
+On peut apercevoir la clé :
+
+![keyFound](images/session2/keyFound.png)
+
+ 
+
+Comment le développeur aurait dû éviter ça ?
+
+Le développeur aurait dû ne jamais intégrer la clé API directement dans l'image Docker.
+
+1. Utiliser des variables d’environnement au runtime 
+2. Monter un fichier secret à l’exécution 
+3. Utiliser un outil de gestion des secrets sécurisé, comme :
+-Vault
+-AWS Secrets Manager
+-Docker Swarm secrets
+-Kubernetes secrets
+
+
+
+### 6. Rootless mode
+
+On lance sur le port 8080 car les ports inférieurs à 1024 (comme le port 80) nécessitent des privilèges root, donc en mode rootless, on aura (j'ai testé) une erreur du type :
+Error starting userland proxy: listen tcp4 0.0.0.0:80: bind: permission denied
+
+![question6](images/session2/question6.png)
+
+Et voila le résultat :
+
+![question6.1](images/session2/question6.1.png)
+
+On se retrouve bien sur la page d'accueil de Nginx
