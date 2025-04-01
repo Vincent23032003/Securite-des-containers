@@ -84,16 +84,42 @@ Cela nous demande notre passphrase.
 
 ### 3. Signer une image Docker et la pousser vers GitLab
 
+Avant toute chose, on créer un projet dans gitlab.
+
+![image](https://github.com/user-attachments/assets/9073edb7-0ab5-47b8-a0c3-4f1265f43b85)
+Projet créé avec succès.
+
 1. **Build et tag de l'image**
+
+On utilise la commande suivante pour build et tag l'image :
 ```bash
-docker build -t registry.gitlab.com/votre-projet/image:v1 .
+docker build -t registry.gitlab.com/groupe-jvq/tp4-securite-containers/image:v1 .
 ```
 
+![image](https://github.com/user-attachments/assets/a94eca6a-e2fd-455c-99c1-30505efd8e51)
+
+
+
 2. **Login dans le registry de gitlab avec un personal access token**
+
+On a besoin de créer un token. 
+![image](https://github.com/user-attachments/assets/9ca083ec-8377-4cab-bb6c-1bfeb7ac2193)
+On affecte un nom et une date d'expiration (ici le 01/08/2025).
+
 ```bash
 docker login registry.gitlab.com
 ```
+
+![image](https://github.com/user-attachments/assets/26d07f19-7860-48cb-97fe-2415e9cec106)
+
 3. **Push de l'image**
+
+On récupère l'id de l'image :
+![image](https://github.com/user-attachments/assets/c9a23b0a-c30f-49fb-b58e-da91f624be04)
+
+
+On utilise cette commande pour push cette image :
+
 ```bash
 docker push registry.gitlab.com/votre-projet/image:v1
 ```
