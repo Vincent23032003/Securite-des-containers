@@ -10,17 +10,19 @@ Tout d'avord, nous devons installer Cosign. Pour cela, nous utilisons les comman
 
 
 ```bash
-curl -sSL https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64 -o cosign
-chmod +x cosign
-sudo mv cosign /usr/local/bin/
+curl -L -o cosign.exe https://github.com/sigstore/cosign/releases/download/v2.2.3/cosign-windows-amd64.exe
 ```
-<img width="428" alt="image" src="https://github.com/user-attachments/assets/edf185db-f860-4099-a487-4d25a1b94483" />
 
-On vérifie que l'installation a bien fonctionné :
+Pus  on déplace le fichier téléchargé dans un dossier PATH
 
-<img width="345" alt="image" src="https://github.com/user-attachments/assets/2ff0d356-1756-4842-bdee-f5331b58e14a" />
+```bash
+move cosign.exe C:\Windows\System32\
+```
 
-On voit que Cosign a été installer avec succès.
+Enfin, on vérife  l'installation
+```bash
+cosign version
+```
 
 Mais qu'est-ce que Cosign ?
 
@@ -48,55 +50,70 @@ On va s'en servir pour signer numériquement des images ou du code et garantir l
 ---
 
 ### 1. Générer une paire de clés GPG
+#### 1.1 Génération paire de clés 
 
 On utilise la commande suivante pour générer une clé RSA :
 
 ```bash
-gpg --full-generate-key  # Choisir "RSA (sign only)" et une passphrase forte
+gpg --full-generate-key
 ```
 On voit que cela bien créé une clé RSA :
 
-<img width="469" alt="image" src="https://github.com/user-attachments/assets/7ade4d2a-32fa-4fd9-baa8-d56cde911107" />
+![image](https://hackmd.io/_uploads/Sk7zisQkll.png)
 
 On entre une passphrase forte :
 
-![image](https://github.com/user-attachments/assets/fe09a2eb-b4ad-4981-9224-e7b5c9db242d)
+![image](https://hackmd.io/_uploads/HJFQiiQygl.png)
+
+(nb : Ceci est la phrase secrete !)
+
 
 On utilise la commande suivante pour noter la clé de l'id :
 ```bash
 gpg --list-secret-keys   # Noter l'ID de la clé (ex: `ABCD1234`)
 ```
-<img width="289" alt="image" src="https://github.com/user-attachments/assets/bf94d645-c39e-46d8-a6f9-b12016935e24" />
 
-On voit que l'id de la clé est '947CDDEC1976107C27F1EAF494C065C4D6F17667'.
+Par mesure de sécurite, je ne dévoilerai pas l'id de ma clé.
 
-### 2. Exporter la clé privée GPG pour Cosign
+![image](https://hackmd.io/_uploads/BJ9Psimkle.png)
+
+
+Cependant, on a préalablement installé GPG avec l'extension Kleopatra.
+
+![image](https://hackmd.io/_uploads/ByfnssXJee.png)
+
+
+#### 1.2 Exportation de la paire de clés 
 
 ```bash
-gpg --export-secret-keys --armor ABCD1234 > private-gpg.key
+gpg --export-secret-keys --armor  > ma_cle_publique.asc
 ```
-![image](https://github.com/user-attachments/assets/217267d6-af35-4963-a44f-8bdfd7a42a3c)
 
-Cela nous demande notre passphrase.
+le fichier a bien été créé : 
+![image](https://hackmd.io/_uploads/S1oLnjXklg.png)
+
+
 
 ![image](https://github.com/user-attachments/assets/903400ee-50b9-4153-8e3d-e030e36f0577)
 
 
-### 3. Signer une image Docker et la pousser vers GitLab
+### 2. Signer une image Docker et la pousser vers GitLab
 
 Avant toute chose, on créer un projet dans gitlab.
 
-![image](https://github.com/user-attachments/assets/9073edb7-0ab5-47b8-a0c3-4f1265f43b85)
+![image](https://hackmd.io/_uploads/HJ_Hy2Q1gl.png)
+
 Projet créé avec succès.
 
 1. **Build et tag de l'image**
 
 On utilise la commande suivante pour build et tag l'image :
 ```bash
-docker build -t registry.gitlab.com/groupe-jvq/tp4-securite-containers/image:v1 .
+docker build -t registry.gitlab.com/groupe-jvq/tp4-securite-dans-ci-cd/image:v1 .
 ```
 
-![image](https://github.com/user-attachments/assets/a94eca6a-e2fd-455c-99c1-30505efd8e51)
+![image](https://hackmd.io/_uploads/HyBYJ2X1lg.png)
+
 
 
 
@@ -110,7 +127,8 @@ On affecte un nom et une date d'expiration (ici le 01/08/2025).
 docker login registry.gitlab.com
 ```
 
-![image](https://github.com/user-attachments/assets/26d07f19-7860-48cb-97fe-2415e9cec106)
+![image](https://hackmd.io/_uploads/SkwIg3XJgx.png)
+
 
 3. **Push de l'image**
 
@@ -121,19 +139,32 @@ On récupère l'id de l'image :
 On utilise cette commande pour push cette image :
 
 ```bash
-docker push registry.gitlab.com/votre-projet/image:v1
+docker push registry.gitlab.com/vincent.bare.2003/tp4-securite-dans-ci-cd/image:v1
 ```
-
-4. **Installation de cosign**
-```bash
-curl -sSfL https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64 -o cosign && chmod +x cosign
-```
+![image](https://hackmd.io/_uploads/HkYZ7hmkge.png)
 
 
-5. **Signature avec Cosign + clé GPG**
+Nous vérifions que Container registry est bien activé dans Visibility, project features, permissions.
 
-```bash
-./cosign sign --key gpg://private-gpg.key registry.gitlab.com/votre-projet/image:v1
-```
+![image](https://hackmd.io/_uploads/BkIomhmyxl.png)
 
-### 4. Modifier l'image et pousser une version modifiée
+J'ai trouve mon erreur, c'était au moment où j'ai créé le projet, j'avais laissé l'url par défaut https://gitlab.com/group-jvq, qui était en l'occurrence "groupe-jvq". J'ai donc récréer un projet en mettant comme porject URL https://gitlab.com/vincent.bare.2003
+
+![image](https://hackmd.io/_uploads/SJPAKn7Jel.png)
+
+J'ai donc refait la manip et cela a bie marché :
+
+
+![image](https://hackmd.io/_uploads/B1C8q3X1el.png)
+
+![image](https://hackmd.io/_uploads/ry65Yh7Jel.png)
+
+On signe l'image avec Cosign : 
+
+![image](https://hackmd.io/_uploads/ryQzChmkeg.png)
+
+On vérifie que cela a bien marché : 
+![image](https://hackmd.io/_uploads/Sk4SRn7kxe.png)
+
+
+Cela a bien fonctionné !
