@@ -178,11 +178,82 @@ On vérifie que cela a bien marché :
 Cela a bien fonctionné !
 
 
-
-
 On signe maintenant avec Cosign et la clé gpg :
 
 ```bash
 ./cosign sign --key cosign.key registry.gitlab.com/vincent.bare.2003/tp-4/image:v1
 ```
 ![image](https://github.com/user-attachments/assets/556913fc-93c0-4eed-b4e6-72f5220417d9)
+
+
+
+
+### 3. Modifier l'image et pousser une version modifiée
+
+1. **Créer une modification**
+
+On exécute cette commande pour lancer un conteneur dans l'image v1 :
+
+```bash
+docker run -it --rm registry.gitlab.com/vincent.bare.2003/tp-4/image:v1 touch /tampered
+```
+
+![image](https://github.com/user-attachments/assets/2ff3ab4c-6530-4e93-9e87-a87db36129d4)
+
+2. Committer la modification et pousser la nouvelle version
+
+2.1 **Créer une nouvelle image Docker avec la modification**
+
+Ensuite, il faut committer cette modification pour créer une nouvelle image Docker et la pousser avec un nouveau tag (v2).
+
+```bash
+docker commit $(docker ps -lq) registry.gitlab.com/vincent.bare.2003/tp-4/image:v2
+```
+![image](https://github.com/user-attachments/assets/5eb51e85-1910-4973-bab7-1d33c091b746)
+
+
+2.2 **Pousser la nouvelle version vers GitLab**
+
+```bash
+docker commit $(docker ps -lq) registry.gitlab.com/vincent.bare.2003/tp-4/image:v2
+```
+
+![image](https://github.com/user-attachments/assets/feb2f529-1cc0-4e75-8bbb-029866790b93)
+
+
+
+4. Vérifier la signature avant/après modification
+
+1. **Vérification de l'image originale**
+
+```bash
+./cosign verify --key cosign.pub registry.gitlab.com/vincent.bare.2003/tp-4/image:v1
+```
+![image](https://github.com/user-attachments/assets/e75388e0-07c9-4782-9aae-4d8bb290ba6f)
+
+Cela marche bien, ce qui signifie que l'image v1 a été signée correctement avec Cosign auparavant.
+
+2. **Vérification de l'image altérée **
+
+```bash
+./cosign verify --key cosign.pub registry.gitlab.com/vincent.bare.2003/tp-4/image:v2
+```
+
+<img width="373" alt="image" src="https://github.com/user-attachments/assets/cd07befc-b9fd-4b50-8a58-d55d863e43d7" />
+
+Cette vérification doit échouer, car l'image a été modifiée (/tampered a été ajouté) après qu'elle ait été signée initialement, ce qui signifie que la signature de l'image v1 ne correspondra pas à celle de l'image v2.
+
+5. Quelles sont les résultats de ces 2 commandes ?
+
+```bash
+./cosign verify --key cosign.pub registry.gitlab.com/vincent.bare.2003/tp-4/image:v1
+```
+Cela a bien marché comme on a pu voir plus haut dans la question 4.
+Cela signifie que l'image v1 est toujours authentique et n'a pas été altérée depuis qu'elle a été signée.
+
+
+```bash
+./cosign verify --key cosign.pub registry.gitlab.com/vincent.bare.2003/tp-4/image:v2
+```
+Résultat attendu :
+Cette commande devrait échouer, car l'image a été modifiée après la signature initiale.
