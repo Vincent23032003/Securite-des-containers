@@ -24,6 +24,9 @@ Enfin, on vérife  l'installation
 cosign version
 ```
 
+![image](https://github.com/user-attachments/assets/e5404a86-0df3-4063-aa89-fc682b34021c)
+
+
 Mais qu'est-ce que Cosign ?
 
 Cosign est un utilitaire open source en ligne de commande permettant de signer et vérifier des images de conteneurs (Docker/OCI).
@@ -55,17 +58,21 @@ On va s'en servir pour signer numériquement des images ou du code et garantir l
 On utilise la commande suivante pour générer une clé RSA :
 
 ```bash
-gpg --full-generate-key
+./cosign generate-key-pair
 ```
 On voit que cela bien créé une clé RSA :
 
-![image](https://hackmd.io/_uploads/Sk7zisQkll.png)
+![image](https://github.com/user-attachments/assets/04954fe7-9bf5-42cf-bcdf-a2ba463ad4a6)
 
-On entre une passphrase forte :
+On entre bien entendu un mot de passe fort.
 
-![image](https://hackmd.io/_uploads/HJFQiiQygl.png)
+On voit que les fichiers cosign.key et cosign.pub ont été créés.
 
-(nb : Ceci est la phrase secrete !)
+cosign.key → c’est ta clé privée 
+cosign.pub → c’est ta clé publique
+
+![image](https://github.com/user-attachments/assets/6de1c1dc-4d75-4b05-a111-6504e5906b27)
+
 
 
 On utilise la commande suivante pour noter la clé de l'id :
@@ -75,7 +82,8 @@ gpg --list-secret-keys   # Noter l'ID de la clé (ex: `ABCD1234`)
 
 Par mesure de sécurite, je ne dévoilerai pas l'id de ma clé.
 
-![image](https://hackmd.io/_uploads/BJ9Psimkle.png)
+<img width="305" alt="image" src="https://github.com/user-attachments/assets/0dfaeb60-4a89-426e-ab30-5b440ad930a5" />
+
 
 
 Cependant, on a préalablement installé GPG avec l'extension Kleopatra.
@@ -109,11 +117,10 @@ Projet créé avec succès.
 
 On utilise la commande suivante pour build et tag l'image :
 ```bash
-docker build -t registry.gitlab.com/groupe-jvq/tp4-securite-dans-ci-cd/image:v1 .
+docker build -t registry.gitlab.com/groupe-jvq/tp-4/image:v1 .
 ```
 
-![image](https://hackmd.io/_uploads/HyBYJ2X1lg.png)
-
+![image](https://github.com/user-attachments/assets/f02468ca-f448-4ca9-bfc9-989e11c992ea)
 
 
 
@@ -127,7 +134,7 @@ On affecte un nom et une date d'expiration (ici le 01/08/2025).
 docker login registry.gitlab.com
 ```
 
-![image](https://hackmd.io/_uploads/SkwIg3XJgx.png)
+![image](https://github.com/user-attachments/assets/2e3c1f3e-df1b-48c1-97e7-f9670d895e13)
 
 
 3. **Push de l'image**
@@ -139,9 +146,10 @@ On récupère l'id de l'image :
 On utilise cette commande pour push cette image :
 
 ```bash
-docker push registry.gitlab.com/vincent.bare.2003/tp4-securite-dans-ci-cd/image:v1
+docker push registry.gitlab.com/vincent.bare.2003/tp-4/image:v1
 ```
-![image](https://hackmd.io/_uploads/HkYZ7hmkge.png)
+![image](https://github.com/user-attachments/assets/0ed68564-4095-4852-b6b2-eb3823830546)
+
 
 
 Nous vérifions que Container registry est bien activé dans Visibility, project features, permissions.
@@ -168,3 +176,13 @@ On vérifie que cela a bien marché :
 
 
 Cela a bien fonctionné !
+
+
+
+
+On signe maintenant avec Cosign et la clé gpg :
+
+```bash
+./cosign sign --key cosign.key registry.gitlab.com/vincent.bare.2003/tp-4/image:v1
+```
+![image](https://github.com/user-attachments/assets/556913fc-93c0-4eed-b4e6-72f5220417d9)
