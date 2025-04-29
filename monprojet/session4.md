@@ -257,3 +257,25 @@ Cela signifie que l'image v1 est toujours authentique et n'a pas été altérée
 ```
 Résultat attendu :
 Cette commande devrait échouer, car l'image a été modifiée après la signature initiale.
+
+
+
+### 1. Créer un pipeline CI/CD avec Gitlab CI
+
+#### 1.1 Créer le fichier Dockerfile
+
+![image](https://github.com/user-attachments/assets/a5dfbe4e-56a5-4a0e-ad35-61115c68b1bf)
+
+
+#### 1.2 Créer le fichier .gitlab-ci.yml
+
+![image](https://github.com/user-attachments/assets/fcff7bca-faba-4068-b8c0-554f1263837c)
+
+#### 1.3 Faire un push du fichier .gitlab-ci.yml
+
+```bash
+git add .gitlab-ci.yml
+git commit -m "Ajout du pipeline CI/CD"
+git push
+```
+
