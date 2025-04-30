@@ -279,3 +279,4 @@ git commit -m "Ajout du pipeline CI/CD"
 git push
 ```
 
+![image](https://github.com/user-attachments/assets/58ea556b-5dcc-448a-94f9-df145a2c27f0)
